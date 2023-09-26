@@ -330,10 +330,13 @@ def close_calc_grid(symbol,long_open , short_open ,long_close, short_close):
             if order['side'] == 'SELL' and order['positionSide'] == "LONG":
                 long_win_orders.append(order)
             
-        if not len(long_add_orders) == 0:        
-            logger.info("{} 多仓有: {} 张开仓挂单 ".format(symbol,len(long_add_orders)))
-            for lborder in long_add_orders:
-                logger.info("{} 多仓有开仓挂单 {}@{}  ".format(symbol,lborder['origQty'],lborder['price']))
+        if not len(long_add_orders) == 0:
+            if allpositions[symbol]['strend'] == "LONG" and not allpositions[symbol]['over'] == 'OverBuy':        
+                logger.info("{} 多仓有: {} 张开仓挂单 ".format(symbol,len(long_add_orders)))
+                for lborder in long_add_orders:
+                    logger.info("{} 多仓有开仓挂单 {}@{}  ".format(symbol,lborder['origQty'],lborder['price']))
+            else:
+                clear_long_buy_orders(symbol)
         else:
             logger.info("{} 多仓没有开仓挂单 ".format(symbol))
         
@@ -354,10 +357,13 @@ def close_calc_grid(symbol,long_open , short_open ,long_close, short_close):
             if order['side'] == 'BUY' and order['positionSide'] == "SHORT":
                 short_win_orders.append(order)
             
-        if not len(short_add_orders) == 0:        
-            logger.info("{} 空仓有: {} 张开仓挂单 ".format(symbol,len(short_add_orders)))
-            for ssorder in short_add_orders:
-                logger.info("{} 空仓有开仓挂单 {}@{}  ".format(symbol,ssorder['origQty'],ssorder['price']))
+        if not len(short_add_orders) == 0:
+            if allpositions[symbol]['strend'] == "SHORT" and not allpositions[symbol]['over'] == 'OverSell':        
+                logger.info("{} 空仓有: {} 张开仓挂单 ".format(symbol,len(short_add_orders)))
+                for ssorder in short_add_orders:
+                    logger.info("{} 空仓有开仓挂单 {}@{}  ".format(symbol,ssorder['origQty'],ssorder['price']))
+            else:
+                clear_short_sell_orders(symbol)
         else:
             logger.info("{} 空仓没有张开仓挂单 ".format(symbol))
         
