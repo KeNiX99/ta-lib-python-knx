@@ -7,7 +7,7 @@
 #    docker run --rm -it talib bash
 #
 
-ARG PYTHON_VERSION="3.7"
+ARG PYTHON_VERSION="3.11.4"
 
 FROM python:$PYTHON_VERSION as builder
 
@@ -48,5 +48,13 @@ RUN if [ "$RUN_TESTS" -ne "0" ]; then \
 FROM python:$PYTHON_VERSION-slim
 COPY --from=builder /src/ta-lib-python/wheels /opt/ta-lib-python/wheels
 COPY --from=builder /opt/ta-lib-core /opt/ta-lib-core
-RUN python -m pip install --no-cache-dir /opt/ta-lib-python/wheels/*.whl \
-    && python -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
+RUN python3 -m pip install --no-cache-dir /opt/ta-lib-python/wheels/*.whl \
+    && python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
+
+WORKDIR ./cw-sail
+COPY floop.sh ./
+COPY requirements_sg.txt ./
+COPY src  ./
+RUN python -m pip install --upgrade pip
+RUN python -m pip  install --upgrade -r requirements_sg.txt 
+CMD ["/bin/sh", "./floop.sh"]
